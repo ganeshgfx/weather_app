@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "946115985233",
+    "project_id": "weather-cddae",
+    "storage_bucket": "weather-cddae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946115985233:android:e728a89e24e0f6c10bdd70",
+        "android_client_info": {
+          "package_name": "ganesh.gfx.weatherapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946115985233-adtoehmj3kde2atbnp762p05qaj4hlma.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDItWV-DdM-ayC1Wili3qH4ywF3KsE9dxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946115985233-adtoehmj3kde2atbnp762p05qaj4hlma.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
