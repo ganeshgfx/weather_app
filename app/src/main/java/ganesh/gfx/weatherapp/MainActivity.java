@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
 
         if (firebaseUser!=null){
             //Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(MainActivity.this,MainPage.class));
+            startActivity(new Intent(MainActivity.this,MainNavPage.class));
         }
         
         signInButton = findViewById(R.id.signin);
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity{
 
             if(task.isSuccessful()){
                 Toast.makeText(this, "Signed In", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this,MainPage.class));
+                startActivity(new Intent(MainActivity.this,MainNavPage.class));
                 try {
                     GoogleSignInAccount googleSignInAccount = task.getResult(ApiException.class);
                     if(googleSignInAccount!=null)

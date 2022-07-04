@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Whether app</string>
+    <string name="title_activity_main_nav_page">MainNavPage</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Whether</string>
+    <string name="title_notifications">Profile</string>
+
+
 </resources>
