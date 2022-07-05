@@ -4,14 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
     tools:context=".ui.home.HomeFragment">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:padding="100dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:fitsSystemWindows="true"
+        android:layout_margin="20dp"
         android:layout_height="match_parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_baseline_cloud_24"
+            app:endIconContentDescription="search"
+
+            android:hint="Location">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,6 +48,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="100dp"
             android:orientation="vertical" >
 
             <TextView

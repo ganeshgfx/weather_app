@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,6 +26,7 @@ import ganesh.gfx.weatherapp.databinding.FragmentDashboardBinding;
 public class DashboardFragment extends Fragment {
 
     private FragmentDashboardBinding binding;
+    View root;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class DashboardFragment extends Fragment {
                 new ViewModelProvider(this).get(DashboardViewModel.class);
 
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        root = binding.getRoot();
 
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -54,7 +56,10 @@ public class DashboardFragment extends Fragment {
         });
 
        //imageView.setImageBitmap(user.getPhotoUrl());
+        Glide.with(this).load(user.getPhotoUrl()).into(imageView);
         textView.setText(user.getDisplayName());
+        setText(R.id.text_email,user.getEmail());
+        setText(R.id.text_other,user.getUid());
 
 //        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
@@ -64,5 +69,10 @@ public class DashboardFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    void setText(int id,String text){
+        TextView textView = root.findViewById(id);
+        textView.setText(text);
     }
 }

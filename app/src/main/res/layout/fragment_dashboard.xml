@@ -14,35 +14,69 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="wrap_content"
             android:layout_gravity="center"
+            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_height="wrap_content">
             <LinearLayout
                 android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="50dp"
+                android:layout_gravity="center"
                 android:layout_height="wrap_content">
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
                     android:id="@+id/profileCard"
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="100dp"
                     android:layout_height="wrap_content">
                     <ImageView
                         android:id="@+id/profile"
+                        android:layout_gravity="center"
                         android:src="@drawable/ic_twotone_insert_emoticon_24"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"/>
                 </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/text_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Error"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="8dp"
+                    android:textAlignment="center"
+                    style="@style/TextAppearance.Material3.TitleLarge"
+                    android:textSize="25sp" />
+                <TextView
+                    android:id="@+id/text_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Error"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textAlignment="center"
+                    style="@style/TextAppearance.Material3.BodySmall"
+                    android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/text_other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Error"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textAlignment="center"
+                    android:textSize="10dp"
+                    />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/text_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Error"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:textAlignment="center"
-            android:textSize="20sp" />
+
     </LinearLayout>
 
 </FrameLayout>
