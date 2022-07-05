@@ -32,7 +32,7 @@ public class MainNavPage extends AppCompatActivity {
                 R.id.navigation_dashboard)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main_nav_page);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
