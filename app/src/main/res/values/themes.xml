@@ -15,7 +15,7 @@
     </style>
 
 
-    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.Light">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -46,9 +46,14 @@
 
 <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <item name="android:windowTranslucentNavigation">true</item>
+
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+
 <!--        <item name="android:statusBarColor">#00FFFFFF</item>-->
- <item name="android:statusBarColor">@color/md_theme_light_surface</item>
-<!--        <item name="android:navigationBarColor">@color/md_theme_light_surface</item>-->
+        <item name="android:statusBarColor">@color/md_theme_light_surface</item>
+
+<!--        <item name="android:navigationBarColor">#00000000</item>-->
+        <item name="android:navigationBarColor">@color/md_theme_light_surface</item>
     </style>
 </resources>
