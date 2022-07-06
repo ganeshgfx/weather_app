@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -75,4 +76,5 @@ public class DashboardFragment extends Fragment {
         TextView textView = root.findViewById(id);
         textView.setText(text);
     }
+
 }
