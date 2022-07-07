@@ -169,7 +169,10 @@ ExtendedFloatingActionButton fab;
                     if(response.code()==200) {
                         WeatherDataHourly weatherInfo = response.body();
                         //oast.makeText(getContext(), ""+gson.toJson(weatherInfo), Toast.LENGTH_SHORT).show();
-                        textView.setText(textView.getText()+"\n"+gson.toJson(weatherInfo));
+                        //textView.setText(textView.getText()+"\n"+gson.toJson(weatherInfo.list));
+                        //textView.setText(gson.toJson(weatherInfo.city));
+                        //Log.d("TAG", "onResponse: "+weatherInfo.list.size());
+                        setInfoUi(weatherInfo);
                         loading(false);
                     }else {
                         Toast toast = Toast.makeText(getContext(), " ⚠️ Error : "+response.message(), Toast.LENGTH_SHORT);
@@ -181,7 +184,9 @@ ExtendedFloatingActionButton fab;
 
                 @Override
                 public void onFailure(Call<WeatherDataHourly> call, Throwable t) {
+
                     Toast toast = Toast.makeText(getContext(), " ⚠️ Error ", Toast.LENGTH_SHORT);
+
                     toast.show();
                     Log.e("TAG", "onFailure: "+t.getMessage(),t);
                     loading(false);
@@ -189,10 +194,24 @@ ExtendedFloatingActionButton fab;
             });
 
         }catch (Exception err){
+            Toast.makeText(getContext(), ""+err.getMessage(), Toast.LENGTH_SHORT).show();
             Log.e("TAG", "onCreateView: "+err.getMessage(),err.fillInStackTrace() );
         }
     }
 
+    private void setInfoUi(WeatherDataHourly data){
+
+        getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.InfoFragment,new InfoFragment(data))
+                .commit();
+//        supportFragmentManager.beginTransaction()
+//                .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left,
+//                        R.anim.slide_in_from_left, R.anim.slide_out_to_right)
+//                .replace(R.id.fragmentContainerView, myFragment)
+//                .commit()
+    }
 
     @Override
     public void onDestroyView() {

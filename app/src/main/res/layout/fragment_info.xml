@@ -3,12 +3,144 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.home.InfoFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_marginTop="25dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_weight="1"
+        android:layout_margin="20dp"
+        style="@style/Widget.Material3.CardView.Elevated"
+        app:cardElevation="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <Button
+                android:clickable="false"
+                app:icon="@drawable/ic_twotone_location_on_24"
+                android:layout_gravity="center"
+                android:id="@+id/location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="India"
+                style="@style/Widget.Material3.Button.TextButton"
+                />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center">
+
+                <ImageView
+                    app:layout_constrainedHeight="true"
+                    app:layout_constrainedWidth="true"
+                    android:id="@+id/mainDisp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_twotone_wb_sunny_24"
+                    app:layout_constraintBottom_toTopOf="@+id/textView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    style="@style/TextAppearance.Material3.TitleLarge"
+                    android:layout_width="331dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="TextView"
+                    app:layout_constraintBottom_toTopOf="@+id/chipGroup"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/chipGroup"
+                    app:layout_constrainedHeight="true"
+                    app:layout_constrainedWidth="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    >
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="2dp"
+                        android:text="Clouds"
+                        android:layout_marginStart="5dp"
+                        app:chipIcon="@drawable/ic_baseline_cloud_24" />
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="2dp"
+                        android:layout_marginStart="5dp"
+                        android:text="Rain"
+                        app:chipIcon="@drawable/ic_water_drop_black_24dp" />
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_marginStart="5dp"
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="2dp"
+                        android:text="Pressure"
+                        app:chipIcon="@drawable/ic_twotone_av_timer_24" />
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:elevation="2dp"
+                        android:text="Temperature"
+                        app:chipIcon="@drawable/ic_twotone_device_thermostat_24" />
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="2dp"
+                        android:layout_marginStart="5dp"
+                        android:text="Visibility"
+                        app:chipIcon="@drawable/ic_twotone_remove_red_eye_24" />
+
+
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:elevation="2dp"
+                        android:layout_marginStart="5dp"
+                        android:text="Wind"
+                        app:chipIcon="@drawable/ic_twotone_wind_power_24" />
+
+
+                </com.google.android.material.chip.ChipGroup>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/weather_list"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
 </FrameLayout>
