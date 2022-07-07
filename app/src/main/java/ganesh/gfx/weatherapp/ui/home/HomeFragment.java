@@ -1,14 +1,20 @@
 package ganesh.gfx.weatherapp.ui.home;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -20,9 +26,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,6 +49,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.List;
 
+import ganesh.gfx.weatherapp.MainNavPage;
 import ganesh.gfx.weatherapp.R;
 import ganesh.gfx.weatherapp.data.WeatherDataInterface;
 import ganesh.gfx.weatherapp.data.hourly.WeatherDataHourly;
@@ -39,6 +57,8 @@ import ganesh.gfx.weatherapp.data.info.WeatherInfo;
 
 
 import ganesh.gfx.weatherapp.databinding.FragmentHomeBinding;
+import ganesh.gfx.weatherapp.ui.home.recycle.ItemClickListener;
+import ganesh.gfx.weatherapp.ui.home.recycle.LocationAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,8 +71,10 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
 
     TextInputLayout textInputLayout;
-ExtendedFloatingActionButton fab;
+    ExtendedFloatingActionButton fab;
     TextView textView;
+    RecyclerView recyclerView;
+    MaterialCardView location_layout;
 
     Gson gson;
 
@@ -60,6 +82,7 @@ ExtendedFloatingActionButton fab;
 
     Retrofit retrofit;
     WeatherDataInterface apiService;
+
 
     boolean extend = true;
 
@@ -78,19 +101,23 @@ ExtendedFloatingActionButton fab;
 
         textView = root.findViewById(R.id.output);
         textInputLayout = root.findViewById(R.id.location);
+        recyclerView = root.findViewById(R.id.locationRe);
+        location_layout = root.findViewById(R.id.inputUi);
 
-        gson =  new GsonBuilder().setPrettyPrinting().create();
+        LinearLayoutManager layout = new LinearLayoutManager(getContext());
+        layout.setOrientation(RecyclerView.VERTICAL);
+        recyclerView.setLayoutManager(layout);
 
+        gson = new GsonBuilder().setPrettyPrinting().create();
         retrofit = new Retrofit.Builder()
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setPrettyPrinting().create()))
                 .build();
-         apiService =
+        apiService =
                 retrofit.create(WeatherDataInterface.class);
 
 
-       //getWeather(0.14,0.17);
-        getWeatherHourly(0.14,0.17);
+        //getWeatherHourly(0.14, 0.17);
 
 
         textInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
@@ -100,30 +127,79 @@ ExtendedFloatingActionButton fab;
             }
         });
 
+        textInputLayout.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                getLocation(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         //homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        fab=root.findViewById(R.id.extended_fab);
+        fab = root.findViewById(R.id.extended_fab);
         fab.setExtended(!extend);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(extend){
-                    textInputLayout.setVisibility(View.VISIBLE);
-                }else {
-                    textInputLayout.setVisibility(View.GONE);
+                if (extend) {
+//                    textInputLayout.setVisibility(View.VISIBLE);
+//                    location_layout.setVisibility(View.VISIBLE);
+                } else {
+//                    textInputLayout.setVisibility(View.GONE);
+//                    location_layout.setVisibility(View.GONE);
                     getLocation(textInputLayout.getEditText().getText().toString());
                 }
+                showInputLayout(extend);
                 extend = !extend;
                 fab.setExtended(!extend);
             }
         });
 
+        loading(true);
+        loadWeather();
+
         return root;
+    }
+
+    private void loadWeather() {
+        if(MainNavPage.getLatitude()!=999 && MainNavPage.getLongitude()!=999) {
+            //Toast.makeText(getContext(), MainNavPage.getLatitude()+":"+MainNavPage.getLongitude(), Toast.LENGTH_SHORT).show();
+            getWeatherHourly(MainNavPage.getLatitude(), MainNavPage.getLongitude());
+        }
+        else {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Do something after 100ms
+                    loadWeather();
+                }
+            }, 1000);
+        }
+    }
+
+    void showInputLayout(boolean extend) {
+        if (extend) {
+            textInputLayout.setVisibility(View.VISIBLE);
+            location_layout.setVisibility(View.VISIBLE);
+        } else {
+            textInputLayout.setVisibility(View.GONE);
+            location_layout.setVisibility(View.GONE);
+        }
     }
 
     private void getWeather(double lat, double lon) {
         loading(true);
         try {
-            Call<WeatherInfo> call = apiService.getData(lat,lon,API_KEY);
+            Call<WeatherInfo> call = apiService.getData(lat, lon, API_KEY);
             call.enqueue(new Callback<WeatherInfo>() {
 
                 @Override
@@ -131,13 +207,13 @@ ExtendedFloatingActionButton fab;
 
                     //Toast.makeText(getContext(), response.code()+"", Toast.LENGTH_SHORT).show();
 
-                    if(response.code()==200) {
+                    if (response.code() == 200) {
                         WeatherInfo weatherInfo = response.body();
                         //oast.makeText(getContext(), ""+gson.toJson(weatherInfo), Toast.LENGTH_SHORT).show();
-                        textView.setText(textView.getText()+"\n"+gson.toJson(weatherInfo));
+                        textView.setText(textView.getText() + "\n" + gson.toJson(weatherInfo));
                         loading(false);
-                    }else {
-                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error : "+response.message(), Toast.LENGTH_SHORT);
+                    } else {
+                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error : " + response.message(), Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                         loading(false);
@@ -154,19 +230,20 @@ ExtendedFloatingActionButton fab;
                 }
             });
 
-        }catch (Exception err){
-            Log.e("TAG", "onCreateView: "+err.getMessage(),err.fillInStackTrace() );
+        } catch (Exception err) {
+            Log.e("TAG", "onCreateView: " + err.getMessage(), err.fillInStackTrace());
         }
     }
 
-    private void getWeatherHourly(double lat, double lon) {
+    public void getWeatherHourly(double lat, double lon) {
         loading(true);
+        showInputLayout(false);
         try {
-            Call<WeatherDataHourly> call = apiService.getHourlyData(lat,lon,API_KEY);
+            Call<WeatherDataHourly> call = apiService.getHourlyData(lat, lon, API_KEY);
             call.enqueue(new Callback<WeatherDataHourly>() {
                 @Override
                 public void onResponse(Call<WeatherDataHourly> call, Response<WeatherDataHourly> response) {
-                    if(response.code()==200) {
+                    if (response.code() == 200) {
                         WeatherDataHourly weatherInfo = response.body();
                         //oast.makeText(getContext(), ""+gson.toJson(weatherInfo), Toast.LENGTH_SHORT).show();
                         //textView.setText(textView.getText()+"\n"+gson.toJson(weatherInfo.list));
@@ -174,8 +251,8 @@ ExtendedFloatingActionButton fab;
                         //Log.d("TAG", "onResponse: "+weatherInfo.list.size());
                         setInfoUi(weatherInfo);
                         loading(false);
-                    }else {
-                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error : "+response.message(), Toast.LENGTH_SHORT);
+                    } else {
+                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error : " + response.message(), Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                         loading(false);
@@ -188,23 +265,23 @@ ExtendedFloatingActionButton fab;
                     Toast toast = Toast.makeText(getContext(), " ⚠️ Error ", Toast.LENGTH_SHORT);
 
                     toast.show();
-                    Log.e("TAG", "onFailure: "+t.getMessage(),t);
+                    Log.e("TAG", "onFailure: " + t.getMessage(), t);
                     loading(false);
                 }
             });
 
-        }catch (Exception err){
-            Toast.makeText(getContext(), ""+err.getMessage(), Toast.LENGTH_SHORT).show();
-            Log.e("TAG", "onCreateView: "+err.getMessage(),err.fillInStackTrace() );
+        } catch (Exception err) {
+            Toast.makeText(getContext(), "" + err.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e("TAG", "onCreateView: " + err.getMessage(), err.fillInStackTrace());
         }
     }
 
-    private void setInfoUi(WeatherDataHourly data){
+    private void setInfoUi(WeatherDataHourly data) {
 
         getActivity()
                 .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.InfoFragment,new InfoFragment(data))
+                .replace(R.id.InfoFragment, new InfoFragment(data))
                 .commit();
 //        supportFragmentManager.beginTransaction()
 //                .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left,
@@ -219,14 +296,16 @@ ExtendedFloatingActionButton fab;
         binding = null;
     }
 
-    void loading(boolean show){
+    void loading(boolean show) {
         CircularProgressIndicator circularProgressIndicator = root.findViewById(R.id.loading);
-        if(show){
+        if (show) {
             circularProgressIndicator.setVisibility(View.VISIBLE);
             return;
         }
         circularProgressIndicator.setVisibility(View.GONE);
     }
+
+    LocationAdapter locationAdapter;
 
     //Location
     public void getLocation(String place) {
@@ -237,12 +316,12 @@ ExtendedFloatingActionButton fab;
             @Override
             protected List<Address> doInBackground(Void... voids) {
 
-                Geocoder geocoder  = new Geocoder(getContext());
+                Geocoder geocoder = new Geocoder(getContext());
                 List<Address> address = null;
                 try {
-                   address = geocoder.getFromLocationName(place,1);
+                    address = geocoder.getFromLocationName(place, 5);
                 } catch (IOException e) {
-                    loading(false);
+                    //loading(false);
                     e.printStackTrace();
                 }
 
@@ -251,18 +330,45 @@ ExtendedFloatingActionButton fab;
 
             public void onPostExecute(List<Address> listAddresses) {
                 Address address = null;
+
                 if ((listAddresses != null) && (listAddresses.size() > 0)) {
                     address = listAddresses.get(0);
+
+                    Log.d("TAG", "onPostExecute: " + listAddresses.size());
+
+                    locationAdapter = new LocationAdapter(
+                            listAddresses
+                    );
+                    recyclerView.setAdapter(
+                            locationAdapter
+                    );
+                    locationAdapter.setClickListener(new ItemClickListener() {
+                        @Override
+                        public void onClick(View view, Address address) {
+                            getWeatherHourly(address.getLatitude(), address.getLongitude());
+                        }
+                    });
 //                    getWeather(address.getLatitude(),address.getLongitude());
-                    getWeatherHourly(address.getLatitude(),address.getLongitude());
-                }
-                else {
+                    // getWeatherHourly(address.getLatitude(),address.getLongitude());
                     loading(false);
-                    Toast.makeText(getContext(), "No Location Found", Toast.LENGTH_SHORT).show();
+                } else {
+                    loading(false);
+                    // Toast.makeText(getContext(), "No Location Found", Toast.LENGTH_SHORT).show();
                 }
             }
         }.execute();
     }
-    //
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    //////////////////////////////////////////////////////
+
+    void checkLocationPerm(){
+
+    }
+
+    //////////////////////////////////////////////////////
 
 }

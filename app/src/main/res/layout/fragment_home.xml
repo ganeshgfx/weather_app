@@ -32,29 +32,49 @@
         android:layout_marginTop="25dp"
         tools:context=".ui.home.HomeFragment">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/location"
-            android:elevation="15dp"
-            android:layout_margin="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_baseline_cloud_24"
-            app:startIconDrawable="@drawable/ic_twotone_wb_sunny_24"
-            app:endIconContentDescription="search"
-            android:visibility="gone"
-            android:hint="Location">
+       <com.google.android.material.card.MaterialCardView
+           android:layout_width="match_parent"
+           android:layout_margin="20dp"
+           android:visibility="gone"
+           style="@style/Widget.Material3.CardView.Elevated"
+           android:id="@+id/inputUi"
+           android:layout_height="wrap_content">
+          <LinearLayout
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:maxLines="1"
-                android:lines="1"
-                android:singleLine="true"
-                android:layout_height="wrap_content"
-                />
+              <com.google.android.material.textfield.TextInputLayout
+                  android:id="@+id/location"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_gravity="center"
+                  android:layout_margin="10dp"
+                  android:elevation="15dp"
+                  android:hint="Location"
+                  android:visibility="visible"
+                  app:endIconContentDescription="search"
+                  app:endIconDrawable="@drawable/ic_baseline_cloud_24"
+                  app:endIconMode="custom"
+                  app:startIconDrawable="@drawable/ic_twotone_wb_sunny_24">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                  <com.google.android.material.textfield.TextInputEditText
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginBottom="6dp"
+                      android:lines="1"
+                      android:maxLines="1"
+                      android:singleLine="true" />
+
+              </com.google.android.material.textfield.TextInputLayout>
+
+              <androidx.recyclerview.widget.RecyclerView
+                  android:id="@+id/locationRe"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content" />
+
+          </LinearLayout>
+       </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/loading"

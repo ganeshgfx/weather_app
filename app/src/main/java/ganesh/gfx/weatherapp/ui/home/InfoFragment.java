@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.chip.Chip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -118,9 +119,27 @@ public class InfoFragment extends Fragment {
         Button location = view.findViewById(R.id.location);
         location.setText(data.city.name+", "+data.city.country);
 
+
+        loadChips(view.findViewById(R.id.Clouds),"Clouds : "+data.list.get(0).clouds.all+" %");
+        Double rainData;
+        try {
+            rainData = data.list.get(0).rain._3h;
+        }catch(Exception e){
+            rainData = 0d;
+        }
+        loadChips(view.findViewById(R.id.Rain),"Rain : "+ rainData +" mm");
+        loadChips(view.findViewById(R.id.Pressure),"Pressure : "+data.list.get(0).main.pressure+" hPa");
+        loadChips(view.findViewById(R.id.Temperature),"Temperature : "+data.list.get(0).main.temp+" °C");
+        loadChips(view.findViewById(R.id.Visibility),"Visibility : "+data.list.get(0).visibility+" km");
+        loadChips(view.findViewById(R.id.Wind),"Wind : "+data.list.get(0).wind.speed+" m/s");
+
         return view;
     }
     private String Capitalize(String i) {
         return i.substring(0, 1).toUpperCase() + i.substring(1).toLowerCase();
+    }
+    private void loadChips(View view,String data){
+        Chip chip = (Chip) view;
+        chip.setText(data);
     }
 }

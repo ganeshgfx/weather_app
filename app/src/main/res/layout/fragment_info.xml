@@ -81,6 +81,7 @@
                         android:layout_height="wrap_content"
                         android:elevation="2dp"
                         android:text="Clouds"
+                        android:id="@+id/Clouds"
                         android:layout_marginStart="5dp"
                         app:chipIcon="@drawable/ic_baseline_cloud_24" />
 
@@ -91,6 +92,7 @@
                         android:elevation="2dp"
                         android:layout_marginStart="5dp"
                         android:text="Rain"
+                        android:id="@+id/Rain"
                         app:chipIcon="@drawable/ic_water_drop_black_24dp" />
 
                     <com.google.android.material.chip.Chip
@@ -100,6 +102,7 @@
                         android:layout_height="wrap_content"
                         android:elevation="2dp"
                         android:text="Pressure"
+                        android:id="@+id/Pressure"
                         app:chipIcon="@drawable/ic_twotone_av_timer_24" />
 
                     <com.google.android.material.chip.Chip
@@ -109,6 +112,7 @@
                         android:layout_marginStart="5dp"
                         android:elevation="2dp"
                         android:text="Temperature"
+                        android:id="@+id/Temperature"
                         app:chipIcon="@drawable/ic_twotone_device_thermostat_24" />
 
                     <com.google.android.material.chip.Chip
@@ -118,6 +122,7 @@
                         android:elevation="2dp"
                         android:layout_marginStart="5dp"
                         android:text="Visibility"
+                        android:id="@+id/Visibility"
                         app:chipIcon="@drawable/ic_twotone_remove_red_eye_24" />
 
 
@@ -128,6 +133,7 @@
                         android:elevation="2dp"
                         android:layout_marginStart="5dp"
                         android:text="Wind"
+                        android:id="@+id/Wind"
                         app:chipIcon="@drawable/ic_twotone_wind_power_24" />
 
 
