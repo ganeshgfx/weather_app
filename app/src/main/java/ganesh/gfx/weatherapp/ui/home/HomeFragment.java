@@ -1,20 +1,11 @@
 package ganesh.gfx.weatherapp.ui.home;
 
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,19 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -49,15 +32,14 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.List;
 
+import ganesh.gfx.weatherapp.BuildConfig;
 import ganesh.gfx.weatherapp.MainNavPage;
 import ganesh.gfx.weatherapp.R;
 import ganesh.gfx.weatherapp.data.WeatherDataInterface;
 import ganesh.gfx.weatherapp.data.hourly.WeatherDataHourly;
 import ganesh.gfx.weatherapp.data.info.WeatherInfo;
 
-
 import ganesh.gfx.weatherapp.databinding.FragmentHomeBinding;
-import ganesh.gfx.weatherapp.ui.home.recycle.ItemClickListener;
 import ganesh.gfx.weatherapp.ui.home.recycle.LocationAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,11 +47,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
+    View root;
     TextInputLayout textInputLayout;
     ExtendedFloatingActionButton fab;
     TextView textView;
@@ -78,15 +60,12 @@ public class HomeFragment extends Fragment {
 
     Gson gson;
 
-    View root;
-
     Retrofit retrofit;
     WeatherDataInterface apiService;
 
-
     boolean extend = true;
 
-    final String API_KEY = "e2534f623697d11918e8ae442c47c855";
+    final String API_KEY = BuildConfig.WHETHER_KEY;
     String URL = "https://api.openweathermap.org/data/2.5/";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -96,8 +75,6 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         root = binding.getRoot();
-
-        //((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
         textView = root.findViewById(R.id.output);
         textInputLayout = root.findViewById(R.id.location);
@@ -109,59 +86,36 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(layout);
 
         gson = new GsonBuilder().setPrettyPrinting().create();
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setPrettyPrinting().create()))
                 .build();
+
         apiService =
                 retrofit.create(WeatherDataInterface.class);
 
-
-        //getWeatherHourly(0.14, 0.17);
-
-
-        textInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getLocation(textInputLayout.getEditText().getText().toString());
-            }
-        });
+        textInputLayout.setEndIconOnClickListener(view -> getLocation(textInputLayout.getEditText().getText().toString()));
 
         textInputLayout.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 getLocation(charSequence.toString());
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            @Override public void afterTextChanged(Editable editable) { }
         });
 
-        //homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         fab = root.findViewById(R.id.extended_fab);
         fab.setExtended(!extend);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (extend) {
-//                    textInputLayout.setVisibility(View.VISIBLE);
-//                    location_layout.setVisibility(View.VISIBLE);
-                } else {
-//                    textInputLayout.setVisibility(View.GONE);
-//                    location_layout.setVisibility(View.GONE);
-                    getLocation(textInputLayout.getEditText().getText().toString());
-                }
-                showInputLayout(extend);
-                extend = !extend;
-                fab.setExtended(!extend);
-            }
+        fab.setOnClickListener(view -> {
+            if (!extend)
+                getLocation(textInputLayout.getEditText().getText().toString());
+            showInputLayout(extend);
+            extend = !extend;
+            fab.setExtended(!extend);
         });
 
         loading(true);
@@ -172,17 +126,10 @@ public class HomeFragment extends Fragment {
 
     private void loadWeather() {
         if(MainNavPage.getLatitude()!=999 && MainNavPage.getLongitude()!=999) {
-            //Toast.makeText(getContext(), MainNavPage.getLatitude()+":"+MainNavPage.getLongitude(), Toast.LENGTH_SHORT).show();
             getWeatherHourly(MainNavPage.getLatitude(), MainNavPage.getLongitude());
         }
         else {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //Do something after 100ms
-                    loadWeather();
-                }
-            }, 1000);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> loadWeather(), 1000);
         }
     }
 
@@ -201,15 +148,10 @@ public class HomeFragment extends Fragment {
         try {
             Call<WeatherInfo> call = apiService.getData(lat, lon, API_KEY);
             call.enqueue(new Callback<WeatherInfo>() {
-
                 @Override
                 public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
-
-                    //Toast.makeText(getContext(), response.code()+"", Toast.LENGTH_SHORT).show();
-
                     if (response.code() == 200) {
                         WeatherInfo weatherInfo = response.body();
-                        //oast.makeText(getContext(), ""+gson.toJson(weatherInfo), Toast.LENGTH_SHORT).show();
                         textView.setText(textView.getText() + "\n" + gson.toJson(weatherInfo));
                         loading(false);
                     } else {
@@ -218,9 +160,7 @@ public class HomeFragment extends Fragment {
                         toast.show();
                         loading(false);
                     }
-
                 }
-
                 @Override
                 public void onFailure(Call<WeatherInfo> call, Throwable t) {
                     Toast toast = Toast.makeText(getContext(), " ⚠️ Error ", Toast.LENGTH_SHORT);
@@ -245,10 +185,6 @@ public class HomeFragment extends Fragment {
                 public void onResponse(Call<WeatherDataHourly> call, Response<WeatherDataHourly> response) {
                     if (response.code() == 200) {
                         WeatherDataHourly weatherInfo = response.body();
-                        //oast.makeText(getContext(), ""+gson.toJson(weatherInfo), Toast.LENGTH_SHORT).show();
-                        //textView.setText(textView.getText()+"\n"+gson.toJson(weatherInfo.list));
-                        //textView.setText(gson.toJson(weatherInfo.city));
-                        //Log.d("TAG", "onResponse: "+weatherInfo.list.size());
                         setInfoUi(weatherInfo);
                         loading(false);
                     } else {
@@ -258,12 +194,9 @@ public class HomeFragment extends Fragment {
                         loading(false);
                     }
                 }
-
                 @Override
                 public void onFailure(Call<WeatherDataHourly> call, Throwable t) {
-
-                    Toast toast = Toast.makeText(getContext(), " ⚠️ Error ", Toast.LENGTH_SHORT);
-
+                    Toast toast = Toast.makeText(getContext(), " ⚠️ Error "+t.getMessage(), Toast.LENGTH_SHORT);
                     toast.show();
                     Log.e("TAG", "onFailure: " + t.getMessage(), t);
                     loading(false);
@@ -283,11 +216,7 @@ public class HomeFragment extends Fragment {
                 .beginTransaction()
                 .replace(R.id.InfoFragment, new InfoFragment(data))
                 .commit();
-//        supportFragmentManager.beginTransaction()
-//                .setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left,
-//                        R.anim.slide_in_from_left, R.anim.slide_out_to_right)
-//                .replace(R.id.fragmentContainerView, myFragment)
-//                .commit()
+
     }
 
     @Override
@@ -306,54 +235,39 @@ public class HomeFragment extends Fragment {
     }
 
     LocationAdapter locationAdapter;
-
-    //Location
     public void getLocation(String place) {
         loading(true);
         textView.setText("");
-
         new AsyncTask<Void, Void, List<Address>>() {
             @Override
             protected List<Address> doInBackground(Void... voids) {
-
                 Geocoder geocoder = new Geocoder(getContext());
                 List<Address> address = null;
                 try {
                     address = geocoder.getFromLocationName(place, 5);
                 } catch (IOException e) {
-                    //loading(false);
                     e.printStackTrace();
                 }
-
                 return address;
             }
-
             public void onPostExecute(List<Address> listAddresses) {
                 Address address = null;
-
                 if ((listAddresses != null) && (listAddresses.size() > 0)) {
                     address = listAddresses.get(0);
-
-                    Log.d("TAG", "onPostExecute: " + listAddresses.size());
-
+                    //Log.d("TAG", "onPostExecute: " + listAddresses.size());
                     locationAdapter = new LocationAdapter(
                             listAddresses
                     );
                     recyclerView.setAdapter(
                             locationAdapter
                     );
-                    locationAdapter.setClickListener(new ItemClickListener() {
-                        @Override
-                        public void onClick(View view, Address address) {
-                            getWeatherHourly(address.getLatitude(), address.getLongitude());
-                        }
+                    locationAdapter.setClickListener((view, address1) -> {
+                        getWeatherHourly(address1.getLatitude(), address1.getLongitude());
+                        fab.setExtended(false);
                     });
-//                    getWeather(address.getLatitude(),address.getLongitude());
-                    // getWeatherHourly(address.getLatitude(),address.getLongitude());
                     loading(false);
                 } else {
                     loading(false);
-                    // Toast.makeText(getContext(), "No Location Found", Toast.LENGTH_SHORT).show();
                 }
             }
         }.execute();
@@ -362,13 +276,4 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
     }
-
-    //////////////////////////////////////////////////////
-
-    void checkLocationPerm(){
-
-    }
-
-    //////////////////////////////////////////////////////
-
 }

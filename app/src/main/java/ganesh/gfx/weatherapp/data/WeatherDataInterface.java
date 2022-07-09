@@ -11,9 +11,11 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface WeatherDataInterface {
+
     @GET("weather?&units=metric&lang=en")
     Call<WeatherInfo> getData(@Query("lat") double lat, @Query("lon") double lon, @Query("appid") String key);
 
     @GET("forecast?&units=metric&lang=en")
     Call<WeatherDataHourly> getHourlyData(@Query("lat") double lat, @Query("lon") double lon, @Query("appid") String key);
+
 }

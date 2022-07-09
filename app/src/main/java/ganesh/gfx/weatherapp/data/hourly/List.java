@@ -10,7 +10,7 @@ public class List {
 
     @SerializedName("dt")
     @Expose
-    public Double dt;
+    public Long dt;
     @SerializedName("main")
     @Expose
     public Main main;

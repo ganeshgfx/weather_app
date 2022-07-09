@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
@@ -57,31 +58,33 @@ public class MainNavPage extends AppCompatActivity {
         binding = ActivityMainNavPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2000);
+
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            locationRequest = LocationRequest.create();
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setInterval(5000);
-            locationRequest.setFastestInterval(2000);
             getCurrentLocation();
         } else {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 getLocationForLatest();
+                Log.d(TAG, "permission allowed");
             }else {
 
                 locationPermissionRequest.launch(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION
                 });
+
             }
         }
         BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home,
-                R.id.navigation_dashboard)
+                R.id.navigation_dashboard,
+                R.id.navigation_setting)
                 .build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main_nav_page);
@@ -119,11 +122,11 @@ public class MainNavPage extends AppCompatActivity {
     private void getCurrentLocation() {
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (true) {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "getCurrentLocation: PERMISSION_GRANTED");
                 if (isGPSEnabled()) {
-                    Log.d(TAG, "getCurrentLocation: geting location");
+                    Log.d(TAG, "getCurrentLocation: getting location");
 
                     LocationServices.getFusedLocationProviderClient(getApplicationContext())
                             .requestLocationUpdates(locationRequest, new LocationCallback() {
@@ -168,31 +171,28 @@ public class MainNavPage extends AppCompatActivity {
         Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(getApplicationContext())
                 .checkLocationSettings(builder.build());
 
-        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
+        result.addOnCompleteListener(task -> {
 
-                try {
-                    LocationSettingsResponse response = task.getResult(ApiException.class);
-                    Toast.makeText(getApplicationContext(), "GPS is already tured on", Toast.LENGTH_SHORT).show();
+            try {
+                LocationSettingsResponse response = task.getResult(ApiException.class);
+                Toast.makeText(getApplicationContext(), "GPS is already tured on", Toast.LENGTH_SHORT).show();
 
-                } catch (ApiException e) {
+            } catch (ApiException e) {
 
-                    switch (e.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                switch (e.getStatusCode()) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
 
-                            try {
-                                ResolvableApiException resolvableApiException = (ResolvableApiException) e;
-                                resolvableApiException.startResolutionForResult(MainNavPage.this, 2);
-                            } catch (IntentSender.SendIntentException ex) {
-                                ex.printStackTrace();
-                            }
-                            break;
+                        try {
+                            ResolvableApiException resolvableApiException = (ResolvableApiException) e;
+                            resolvableApiException.startResolutionForResult(MainNavPage.this, 2);
+                        } catch (IntentSender.SendIntentException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
 
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            //Device does not have location
-                            break;
-                    }
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        //Device does not have location
+                        break;
                 }
             }
         });
@@ -237,28 +237,31 @@ public class MainNavPage extends AppCompatActivity {
             );
 
     void getLocationForLatest() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            Log.d(TAG, "Not allowed");
 
             return;
         }
+        Log.d(TAG, "getting location");
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            // Logic to handle location object
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
+                .addOnSuccessListener(this, location -> {
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        Log.d(TAG, latitude+" : "+longitude);
+                    }
+                    else {
+
+                        Log.d(TAG, "location NULL");
+                        //getLocationForLatest();
+
+                        new Handler(Looper.getMainLooper()).postDelayed(() ->{
+                            getLocationForLatest();
+                        }, 1000);
                     }
                 });
-}
-// ...
-
-// Before you perform the actual permission request, check whether your app
-// already has the permissions, and whether your app needs to show a permission
-// rationale dialog. For more details, see Request permissions.
-
-    //
+    }
 }

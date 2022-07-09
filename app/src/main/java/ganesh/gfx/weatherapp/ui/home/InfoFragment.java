@@ -109,11 +109,13 @@ public class InfoFragment extends Fragment {
                 adapter
         );
 
-        Log.d("TAG", "===================================");
-        Log.d("TAG", "\nonBindViewHolder: "+gson.toJson(data));
+        //Log.d("TAG", "===================================");
+        //Log.d("TAG", "\nonBindViewHolder: "+gson.toJson(data));
 
         //textView.setText(gson.toJson(data.city));
-        textView.setText(Capitalize(data.list.get(0).weather.get(0).description));
+        textView.setText(Capitalize(
+                data.list.get(0).weather.get(0).description)
+        );
         Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.list.get(0).weather.get(0).icon+"@4x.png").into(mainDisp);
 
         Button location = view.findViewById(R.id.location);

@@ -17,4 +17,10 @@
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="ganesh.gfx.weatherapp.ui.notifications.NotificationsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_notifications" />
+
 </navigation>

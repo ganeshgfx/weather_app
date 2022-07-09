@@ -11,5 +11,9 @@
         android:icon="@drawable/ic_twotone_insert_emoticon_24"
         android:title="Profile" />
 
+<!--    <item-->
+<!--        android:id="@+id/navigation_setting"-->
+<!--        android:icon="@drawable/ic_twotone_settings_24"-->
+<!--        android:title="Settings" />-->
 
 </menu>

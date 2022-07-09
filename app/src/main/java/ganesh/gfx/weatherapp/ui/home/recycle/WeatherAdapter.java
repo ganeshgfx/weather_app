@@ -22,7 +22,10 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import ganesh.gfx.weatherapp.R;
 import ganesh.gfx.weatherapp.data.hourly.Weather;
@@ -64,7 +67,13 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.RecycleV
         String i =  info.weather.get(0).description;
         holder.info.setText(Capitalize(i));
         holder.temp.setText(info.main.temp+"°C");
-        holder.time.setText(info.dtTxt);
+//        holder.time.setText(info.dtTxt);
+
+        Date date = new Date(info.dt*1000L);
+        SimpleDateFormat jdf = new SimpleDateFormat(" hh:mm a, dd/MMMM");
+        String java_date = jdf.format(date);
+
+        holder.time.setText(java_date);
 
         Glide.with(context).load("https://openweathermap.org/img/wn/"+info.weather.get(0).icon+"@4x.png").into(holder.ico);
     }
@@ -74,12 +83,10 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.RecycleV
         return i.substring(0, 1).toUpperCase() + i.substring(1).toLowerCase();
     }
 
-
     @Override
     public int getItemCount() {
        return list.size();
     }
-
 
     class RecycleViewHolder extends RecyclerView.ViewHolder{
         public TextView info;
