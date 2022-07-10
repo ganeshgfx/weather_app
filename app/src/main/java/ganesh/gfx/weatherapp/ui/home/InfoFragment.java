@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,63 +78,64 @@ public class InfoFragment extends Fragment {
         }
     }
 
+    FrameLayout infoFragment;
     RecyclerView recyclerView;
     WeatherAdapter adapter;
     TextView textView;
-
     ImageView mainDisp;
 
     Gson gson;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
 
         gson =  new GsonBuilder().setPrettyPrinting().create();
 
         View view = inflater.inflate(R.layout.fragment_info, container, false);
-
+        infoFragment =view.findViewById(R.id.InfoFragment);
         textView = view.findViewById(R.id.textView);
         recyclerView = (RecyclerView)view.findViewById(R.id.weather_list);
         mainDisp = view.findViewById(R.id.mainDisp);
-
-        LinearLayoutManager layout = new LinearLayoutManager(getContext());
-        layout.setOrientation(RecyclerView.HORIZONTAL);
-//        layout.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setLayoutManager(layout);
-
-        adapter = new WeatherAdapter(
-                data.list
-        );
-        recyclerView.setAdapter(
-                adapter
-        );
-
-        //Log.d("TAG", "===================================");
-        //Log.d("TAG", "\nonBindViewHolder: "+gson.toJson(data));
-
-        //textView.setText(gson.toJson(data.city));
-        textView.setText(Capitalize(
-                data.list.get(0).weather.get(0).description)
-        );
-        Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.list.get(0).weather.get(0).icon+"@4x.png").into(mainDisp);
-
         Button location = view.findViewById(R.id.location);
-        location.setText(data.city.name+", "+data.city.country);
+
+        infoFragment.setVisibility(View.GONE);
+
+        if(data!=null) {
+            LinearLayoutManager layout = new LinearLayoutManager(getContext());
+            layout.setOrientation(RecyclerView.HORIZONTAL);
+            recyclerView.setLayoutManager(layout);
+
+            adapter = new WeatherAdapter(
+                    data.list
+            );
+            recyclerView.setAdapter(
+                    adapter
+            );
+
+            textView.setText(Capitalize(
+                    data.list.get(0).weather.get(0).description)
+            );
+            Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.list.get(0).weather.get(0).icon+"@4x.png").into(mainDisp);
+
+            location.setText(data.city.name+", "+data.city.country);
 
 
-        loadChips(view.findViewById(R.id.Clouds),"Clouds : "+data.list.get(0).clouds.all+" %");
-        Double rainData;
-        try {
-            rainData = data.list.get(0).rain._3h;
-        }catch(Exception e){
-            rainData = 0d;
-        }
-        loadChips(view.findViewById(R.id.Rain),"Rain : "+ rainData +" mm");
-        loadChips(view.findViewById(R.id.Pressure),"Pressure : "+data.list.get(0).main.pressure+" hPa");
-        loadChips(view.findViewById(R.id.Temperature),"Temperature : "+data.list.get(0).main.temp+" °C");
-        loadChips(view.findViewById(R.id.Visibility),"Visibility : "+data.list.get(0).visibility+" km");
-        loadChips(view.findViewById(R.id.Wind),"Wind : "+data.list.get(0).wind.speed+" m/s");
+            loadChips(view.findViewById(R.id.Clouds),"Clouds : "+data.list.get(0).clouds.all+" %");
+            Double rainData;
+            try {
+                rainData = data.list.get(0).rain._3h;
+            }catch(Exception e){
+                rainData = 0d;
+            }
+            loadChips(view.findViewById(R.id.Rain),"Rain : "+ rainData +" mm");
+            loadChips(view.findViewById(R.id.Pressure),"Pressure : "+data.list.get(0).main.pressure+" hPa");
+            loadChips(view.findViewById(R.id.Temperature),"Temperature : "+data.list.get(0).main.temp+" °C");
+            loadChips(view.findViewById(R.id.Visibility),"Visibility : "+data.list.get(0).visibility+" km");
+            loadChips(view.findViewById(R.id.Wind),"Wind : "+data.list.get(0).wind.speed+" m/s");
+
+            infoFragment.setVisibility(View.VISIBLE);
+        }else  infoFragment.setVisibility(View.GONE);
 
         return view;
     }

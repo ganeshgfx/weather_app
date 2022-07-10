@@ -41,6 +41,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import ganesh.gfx.weatherapp.data.hourly.WeatherDataHourly;
 import ganesh.gfx.weatherapp.databinding.ActivityMainNavPageBinding;
 
 
@@ -50,6 +51,9 @@ public class MainNavPage extends AppCompatActivity {
     private ActivityMainNavPageBinding binding;
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
+
+    public static WeatherDataHourly weatherDataHourly;
+    public static boolean wheatherDataChanged = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

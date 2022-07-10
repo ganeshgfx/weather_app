@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/InfoFragment"
+    android:visibility="visible"
     tools:context=".ui.home.InfoFragment">
 
 <LinearLayout
@@ -57,7 +59,7 @@
                     android:layout_width="331dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="TextView"
+                    android:text="If you're seeing this that means something is wrong."
                     app:layout_constraintBottom_toTopOf="@+id/chipGroup"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +86,15 @@
                         android:id="@+id/Clouds"
                         android:layout_marginStart="5dp"
                         app:chipIcon="@drawable/ic_baseline_cloud_24" />
+                    <com.google.android.material.chip.Chip
+                        style="@style/Widget.Material3.Chip.Assist.Elevated"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:elevation="2dp"
+                        android:text="Temperature"
+                        android:id="@+id/Temperature"
+                        app:chipIcon="@drawable/ic_twotone_device_thermostat_24" />
 
                     <com.google.android.material.chip.Chip
                         style="@style/Widget.Material3.Chip.Assist.Elevated"
@@ -105,15 +116,7 @@
                         android:id="@+id/Pressure"
                         app:chipIcon="@drawable/ic_twotone_av_timer_24" />
 
-                    <com.google.android.material.chip.Chip
-                        style="@style/Widget.Material3.Chip.Assist.Elevated"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:elevation="2dp"
-                        android:text="Temperature"
-                        android:id="@+id/Temperature"
-                        app:chipIcon="@drawable/ic_twotone_device_thermostat_24" />
+
 
                     <com.google.android.material.chip.Chip
                         style="@style/Widget.Material3.Chip.Assist.Elevated"

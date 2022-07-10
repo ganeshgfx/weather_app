@@ -1,5 +1,7 @@
 package ganesh.gfx.weatherapp.ui.home;
 
+import static ganesh.gfx.weatherapp.MainNavPage.wheatherDataChanged;
+
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -13,6 +15,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -125,7 +128,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadWeather() {
-        if(MainNavPage.getLatitude()!=999 && MainNavPage.getLongitude()!=999) {
+        if(MainNavPage.getLatitude()!=999 && MainNavPage.getLongitude()!=999 ) {
             getWeatherHourly(MainNavPage.getLatitude(), MainNavPage.getLongitude());
         }
         else {
@@ -178,34 +181,42 @@ public class HomeFragment extends Fragment {
     public void getWeatherHourly(double lat, double lon) {
         loading(true);
         showInputLayout(false);
-        try {
-            Call<WeatherDataHourly> call = apiService.getHourlyData(lat, lon, API_KEY);
-            call.enqueue(new Callback<WeatherDataHourly>() {
-                @Override
-                public void onResponse(Call<WeatherDataHourly> call, Response<WeatherDataHourly> response) {
-                    if (response.code() == 200) {
-                        WeatherDataHourly weatherInfo = response.body();
-                        setInfoUi(weatherInfo);
-                        loading(false);
-                    } else {
-                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error : " + response.message(), Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER, 0, 0);
+        if(wheatherDataChanged){
+            try {
+                Call<WeatherDataHourly> call = apiService.getHourlyData(lat, lon, API_KEY);
+                call.enqueue(new Callback<WeatherDataHourly>() {
+                    @Override
+                    public void onResponse(Call<WeatherDataHourly> call, Response<WeatherDataHourly> response) {
+                        if (response.code() == 200) {
+                            WeatherDataHourly data = response.body();
+                            MainNavPage.weatherDataHourly = data;
+                            wheatherDataChanged = false;
+                            setInfoUi(data);
+                            loading(false);
+
+                        } else {
+                            Toast toast = Toast.makeText(getContext(), " ⚠️ Error : " + response.message(), Toast.LENGTH_SHORT);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            loading(false);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<WeatherDataHourly> call, Throwable t) {
+                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error "+t.getMessage(), Toast.LENGTH_SHORT);
                         toast.show();
+                        Log.e("TAG", "onFailure: " + t.getMessage(), t);
                         loading(false);
                     }
-                }
-                @Override
-                public void onFailure(Call<WeatherDataHourly> call, Throwable t) {
-                    Toast toast = Toast.makeText(getContext(), " ⚠️ Error "+t.getMessage(), Toast.LENGTH_SHORT);
-                    toast.show();
-                    Log.e("TAG", "onFailure: " + t.getMessage(), t);
-                    loading(false);
-                }
-            });
+                });
 
-        } catch (Exception err) {
-            Toast.makeText(getContext(), "" + err.getMessage(), Toast.LENGTH_SHORT).show();
-            Log.e("TAG", "onCreateView: " + err.getMessage(), err.fillInStackTrace());
+            } catch (Exception err) {
+                Toast.makeText(getContext(), "" + err.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "onCreateView: " + err.getMessage(), err.fillInStackTrace());
+            }
+        }else {
+            setInfoUi(MainNavPage.weatherDataHourly);
+            loading(false);
         }
     }
 
@@ -262,6 +273,7 @@ public class HomeFragment extends Fragment {
                             locationAdapter
                     );
                     locationAdapter.setClickListener((view, address1) -> {
+                        wheatherDataChanged = true;
                         getWeatherHourly(address1.getLatitude(), address1.getLongitude());
                         fab.setExtended(false);
                     });
