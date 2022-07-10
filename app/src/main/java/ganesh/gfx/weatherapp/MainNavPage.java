@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
@@ -29,6 +30,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -37,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -54,6 +57,9 @@ public class MainNavPage extends AppCompatActivity {
 
     public static WeatherDataHourly weatherDataHourly;
     public static boolean wheatherDataChanged = true;
+    public static int selectedPage;
+
+    BottomNavigationView navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +72,8 @@ public class MainNavPage extends AppCompatActivity {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(5000);
         locationRequest.setFastestInterval(2000);
+
+        selectedPage = R.id.navigation_home;
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             getCurrentLocation();
@@ -83,7 +91,8 @@ public class MainNavPage extends AppCompatActivity {
 
             }
         }
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+
+        navView = findViewById(R.id.nav_view);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home,
@@ -93,7 +102,12 @@ public class MainNavPage extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main_nav_page);
         // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+           selectedPage = destination.getId();
+        });
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+
 
         //getSupportActionBar().hide();
     }
@@ -101,8 +115,6 @@ public class MainNavPage extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        //Toast.makeText(this, ""+requestCode, Toast.LENGTH_SHORT).show();
 
         if (requestCode == 2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             if (resultCode == Activity.RESULT_OK) {
@@ -124,8 +136,6 @@ public class MainNavPage extends AppCompatActivity {
     }
 
     private void getCurrentLocation() {
-
-
         if (true) {
             if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "getCurrentLocation: PERMISSION_GRANTED");

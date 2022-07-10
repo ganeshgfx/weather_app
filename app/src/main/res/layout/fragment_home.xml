@@ -15,7 +15,7 @@
         android:layout_gravity="bottom|end"
         android:contentDescription="Search location"
         android:text="Search"
-        app:icon="@drawable/ic_twotone_saved_search_24"/>
+        app:icon="@drawable/ic_ss"/>
 
 
 

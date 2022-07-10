@@ -98,14 +98,16 @@ public class HomeFragment extends Fragment {
         apiService =
                 retrofit.create(WeatherDataInterface.class);
 
-        textInputLayout.setEndIconOnClickListener(view -> getLocation(textInputLayout.getEditText().getText().toString()));
+        //textInputLayout.setEndIconOnClickListener(view -> getLocation(textInputLayout.getEditText().getText().toString()));
 
         textInputLayout.getEditText().addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                getLocation(charSequence.toString());
+                String place = charSequence.toString().trim();
+                if(!place.equals(""))
+                    getLocation(charSequence.toString());
             }
 
             @Override public void afterTextChanged(Editable editable) { }
@@ -114,8 +116,9 @@ public class HomeFragment extends Fragment {
         fab = root.findViewById(R.id.extended_fab);
         fab.setExtended(!extend);
         fab.setOnClickListener(view -> {
-            if (!extend)
-                getLocation(textInputLayout.getEditText().getText().toString());
+            String place = textInputLayout.getEditText().getText().toString().trim();
+            if (!extend && !place.equals(""))
+                getLocation(place);
             showInputLayout(extend);
             extend = !extend;
             fab.setExtended(!extend);
@@ -222,11 +225,13 @@ public class HomeFragment extends Fragment {
 
     private void setInfoUi(WeatherDataHourly data) {
 
-        getActivity()
-                .getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.InfoFragment, new InfoFragment(data))
-                .commit();
+        //Toast.makeText(getContext(), ""+MainNavPage.selectedPage, Toast.LENGTH_SHORT).show();
+        if(MainNavPage.selectedPage == R.id.navigation_home)
+            getActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.InfoFragment, new InfoFragment(data))
+                    .commit();
 
     }
 
