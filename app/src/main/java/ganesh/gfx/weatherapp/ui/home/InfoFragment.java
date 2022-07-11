@@ -116,7 +116,7 @@ public class InfoFragment extends Fragment {
             textView.setText(Capitalize(
                     data.list.get(0).weather.get(0).description)
             );
-            Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.list.get(0).weather.get(0).icon+"@4x.png").into(mainDisp);
+            Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.list.get(0).weather.get(0).icon+"@4x.png").placeholder(R.drawable.ic_hourglass).into(mainDisp);
 
             location.setText(data.city.name+", "+data.city.country);
 

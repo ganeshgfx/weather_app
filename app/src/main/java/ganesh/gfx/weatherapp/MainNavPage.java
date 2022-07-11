@@ -68,14 +68,14 @@ public class MainNavPage extends AppCompatActivity {
         binding = ActivityMainNavPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(2000);
 
         selectedPage = R.id.navigation_home;
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            locationRequest.setInterval(5000);
+            locationRequest.setFastestInterval(2000);
             getCurrentLocation();
         } else {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -177,7 +177,6 @@ public class MainNavPage extends AppCompatActivity {
 
     private void turnOnGPS() {
 
-
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         builder.setAlwaysShow(true);
@@ -211,6 +210,73 @@ public class MainNavPage extends AppCompatActivity {
             }
         });
 
+    }
+
+    //for 12
+    private void enableLoc() {
+
+
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(30 * 1000);
+        locationRequest.setFastestInterval(5 * 1000);
+
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        builder.setAlwaysShow(true);
+
+        Task<LocationSettingsResponse> result =
+                LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
+
+        result.addOnCompleteListener(task -> {
+            try {
+                LocationSettingsResponse response = task.getResult(ApiException.class);
+                getLocationForLatest();
+                //gps = false;
+                // All location settings are satisfied. The client can initialize location
+                // requests here.
+
+            } catch (ApiException exception) {
+                //gps = false;
+                switch (exception.getStatusCode()) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the
+                        // user a dialog.
+                        try {
+                            // Cast to a resolvable exception.
+                            ResolvableApiException resolvable = (ResolvableApiException) exception;
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            resolvable.startResolutionForResult(
+                                    MainNavPage.this,
+                                    10);
+                        } catch (IntentSender.SendIntentException e) {
+                            // Ignore the error.
+                        } catch (ClassCastException e) {
+                            // Ignore, should be an impossible error.
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the
+                        // settings so we won't show the dialog.
+                        break;
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            getCurrentLocation();
+        } else {
+            getLocationForLatest();
+        }
     }
 
     private boolean isGPSEnabled() {
@@ -272,10 +338,20 @@ public class MainNavPage extends AppCompatActivity {
                         Log.d(TAG, "location NULL");
                         //getLocationForLatest();
 
-                        new Handler(Looper.getMainLooper()).postDelayed(() ->{
-                            getLocationForLatest();
-                        }, 1000);
+                        if(!isGPSEnabled() ){
+                            Log.d(TAG, "getLocationForLatest: "+isGPSEnabled());
+                            if(!gps){
+                                gps = true;
+                                enableLoc();
+                            }
+
+                        } else {
+                            new Handler(Looper.getMainLooper()).postDelayed(() ->{
+                                getLocationForLatest();
+                            }, 2000);
+                        }
                     }
                 });
     }
+    boolean gps = false;
 }

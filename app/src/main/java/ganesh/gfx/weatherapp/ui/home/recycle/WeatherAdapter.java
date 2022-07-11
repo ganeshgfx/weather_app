@@ -75,7 +75,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.RecycleV
 
         holder.time.setText(java_date);
 
-        Glide.with(context).load("https://openweathermap.org/img/wn/"+info.weather.get(0).icon+"@4x.png").into(holder.ico);
+        Glide.with(context).load("https://openweathermap.org/img/wn/"+info.weather.get(0).icon+"@4x.png").placeholder(R.drawable.ic_hourglass).into(holder.ico);
     }
 
     @NonNull

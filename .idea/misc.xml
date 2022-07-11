@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/anime_load.xml" value="0.2955" />
         <entry key="app/src/main/res/drawable/app_back.xml" value="0.13" />
+        <entry key="app/src/main/res/drawable/ic_baseline_cloud_24.xml" value="0.2955" />
+        <entry key="app/src/main/res/drawable/ic_hourglass.xml" value="0.2955" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3475" />
         <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.3475" />
         <entry key="app/src/main/res/drawable/ic_launcher_my_background_my.xml" value="0.1845" />

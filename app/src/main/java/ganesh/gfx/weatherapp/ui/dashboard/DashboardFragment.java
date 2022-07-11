@@ -57,7 +57,11 @@ public class DashboardFragment extends Fragment {
         });
 
        //imageView.setImageBitmap(user.getPhotoUrl());
-        Glide.with(this).load(user.getPhotoUrl()).into(imageView);
+        Glide
+                .with(this)
+                .load(user.getPhotoUrl())
+                .placeholder(R.drawable.ic_hourglass)
+                .into(imageView);
         textView.setText(user.getDisplayName());
         setText(R.id.text_email,user.getEmail());
         setText(R.id.text_other,user.getUid());
