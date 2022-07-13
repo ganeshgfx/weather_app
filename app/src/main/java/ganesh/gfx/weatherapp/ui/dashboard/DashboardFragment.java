@@ -3,16 +3,19 @@ package ganesh.gfx.weatherapp.ui.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,14 +50,7 @@ public class DashboardFragment extends Fragment {
         imageView = root.findViewById(R.id.profile);
         cardView = root.findViewById(R.id.profileCard);
 
-        cardView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                view.getContext().startActivity(new Intent(view.getContext(), MainActivity.class));
-                return false;
-            }
-        });
+        cardView.setOnLongClickListener(view -> logout());
 
        //imageView.setImageBitmap(user.getPhotoUrl());
         Glide
@@ -67,7 +63,22 @@ public class DashboardFragment extends Fragment {
         setText(R.id.text_other,user.getUid());
 
 //        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        MaterialToolbar materialToolbar = root.findViewById(R.id.topAppBar);
+        materialToolbar.setOnMenuItemClickListener(item -> {
+            if(item.getItemId()==R.id.logout){
+                logout();
+            }
+            return false;
+        });
+
         return root;
+    }
+
+    private boolean logout() {
+        FirebaseAuth.getInstance().signOut();
+        getContext().startActivity(new Intent(getContext(), MainActivity.class));
+        return false;
     }
 
     @Override

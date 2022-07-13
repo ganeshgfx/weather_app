@@ -12,6 +12,8 @@
         <entry key="app/src/main/res/drawable/ic_launcher_my_background_my.xml" value="0.1845" />
         <entry key="app/src/main/res/drawable/ic_launcher_my_foreground_my.xml" value="0.1845" />
         <entry key="app/src/main/res/drawable/ic_twotone_av_timer_24.xml" value="0.3475" />
+        <entry key="app/src/main/res/drawable/ic_twotone_exit_to_app_24.xml" value="0.2" />
+        <entry key="app/src/main/res/drawable/ic_twotone_grain_24.xml" value="0.2" />
         <entry key="app/src/main/res/drawable/ic_water_drop_black_24dp.xml" value="0.3475" />
         <entry key="app/src/main/res/drawable/splash_back.xml" value="0.2165" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
@@ -24,6 +26,7 @@
         <entry key="app/src/main/res/layout/location_item.xml" value="0.353125" />
         <entry key="app/src/main/res/layout/weather_item_layout.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.35520833333333335" />
+        <entry key="app/src/main/res/menu/profile_menu.xml" value="0.3494791666666667" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1845" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_roundc.png.xml" value="0.187" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_roundc.pngN.xml" value="0.1845" />

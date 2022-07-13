@@ -20,6 +20,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "WHETHER_KEY", apikeyProperties['WHETHER_KEY'])
+        buildConfigField("String", "FIRE_KEY", apikeyProperties['FIRE_KEY'])
     }
 
     buildTypes {

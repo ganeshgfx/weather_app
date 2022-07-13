@@ -71,8 +71,11 @@ public class HomeFragment extends Fragment {
     final String API_KEY = BuildConfig.WHETHER_KEY;
     String URL = "https://api.openweathermap.org/data/2.5/";
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
         HomeViewModel homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
@@ -83,22 +86,6 @@ public class HomeFragment extends Fragment {
         textInputLayout = root.findViewById(R.id.location);
         recyclerView = root.findViewById(R.id.locationRe);
         location_layout = root.findViewById(R.id.inputUi);
-
-        LinearLayoutManager layout = new LinearLayoutManager(getContext());
-        layout.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setLayoutManager(layout);
-
-        gson = new GsonBuilder().setPrettyPrinting().create();
-
-        retrofit = new Retrofit.Builder()
-                .baseUrl(URL)
-                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setPrettyPrinting().create()))
-                .build();
-
-        apiService =
-                retrofit.create(WeatherDataInterface.class);
-
-        //textInputLayout.setEndIconOnClickListener(view -> getLocation(textInputLayout.getEditText().getText().toString()));
 
         textInputLayout.getEditText().addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
@@ -124,8 +111,20 @@ public class HomeFragment extends Fragment {
             fab.setExtended(!extend);
         });
 
+        LinearLayoutManager layout = new LinearLayoutManager(getContext());
+        layout.setOrientation(RecyclerView.VERTICAL);
+        recyclerView.setLayoutManager(layout);
+
+        gson = new GsonBuilder().setPrettyPrinting().create();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(URL)
+                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().setPrettyPrinting().create()))
+                .build();
+        apiService = retrofit.create(WeatherDataInterface.class);
+
         loading(true);
         loadWeather();
+        //getWeather(1.0,1);
 
         return root;
     }
@@ -161,7 +160,10 @@ public class HomeFragment extends Fragment {
                         textView.setText(textView.getText() + "\n" + gson.toJson(weatherInfo));
                         loading(false);
                     } else {
-                        Toast toast = Toast.makeText(getContext(), " ⚠️ Error : " + response.message(), Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(
+                                getContext(),
+                                " ⚠️ Error : " + response.message(),
+                                Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
                         loading(false);
@@ -175,7 +177,6 @@ public class HomeFragment extends Fragment {
                     loading(false);
                 }
             });
-
         } catch (Exception err) {
             Log.e("TAG", "onCreateView: " + err.getMessage(), err.fillInStackTrace());
         }
