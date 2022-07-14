@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.util.List;
 
 import ganesh.gfx.weatherapp.R;
 import ganesh.gfx.weatherapp.data.hourly.WeatherDataHourly;
@@ -107,32 +104,32 @@ public class InfoFragment extends Fragment {
             recyclerView.setLayoutManager(layout);
 
             adapter = new WeatherAdapter(
-                    data.list
+                    data.weatherList
             );
             recyclerView.setAdapter(
                     adapter
             );
 
             textView.setText(Capitalize(
-                    data.list.get(0).weather.get(0).description)
+                    data.weatherList.get(0).weather.get(0).description)
             );
-            Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.list.get(0).weather.get(0).icon+"@4x.png").placeholder(R.drawable.ic_hourglass).into(mainDisp);
+            Glide.with(getContext()).load("https://openweathermap.org/img/wn/"+data.weatherList.get(0).weather.get(0).icon+"@4x.png").placeholder(R.drawable.ic_hourglass).into(mainDisp);
 
             location.setText(data.city.name+", "+data.city.country);
 
 
-            loadChips(view.findViewById(R.id.Clouds),"Clouds : "+data.list.get(0).clouds.all+" %");
+            loadChips(view.findViewById(R.id.Clouds),"Clouds : "+data.weatherList.get(0).clouds.all+" %");
             Double rainData;
             try {
-                rainData = data.list.get(0).rain._3h;
+                rainData = data.weatherList.get(0).rain._3h;
             }catch(Exception e){
                 rainData = 0d;
             }
             loadChips(view.findViewById(R.id.Rain),"Rain : "+ rainData +" mm");
-            loadChips(view.findViewById(R.id.Pressure),"Pressure : "+data.list.get(0).main.pressure+" hPa");
-            loadChips(view.findViewById(R.id.Temperature),"Temperature : "+data.list.get(0).main.temp+" °C");
-            loadChips(view.findViewById(R.id.Visibility),"Visibility : "+data.list.get(0).visibility+" km");
-            loadChips(view.findViewById(R.id.Wind),"Wind : "+data.list.get(0).wind.speed+" m/s");
+            loadChips(view.findViewById(R.id.Pressure),"Pressure : "+data.weatherList.get(0).main.pressure+" hPa");
+            loadChips(view.findViewById(R.id.Temperature),"Temperature : "+data.weatherList.get(0).main.temp+" °C");
+            loadChips(view.findViewById(R.id.Visibility),"Visibility : "+data.weatherList.get(0).visibility+" km");
+            loadChips(view.findViewById(R.id.Wind),"Wind : "+data.weatherList.get(0).wind.speed+" m/s");
 
             infoFragment.setVisibility(View.VISIBLE);
         }else  infoFragment.setVisibility(View.GONE);

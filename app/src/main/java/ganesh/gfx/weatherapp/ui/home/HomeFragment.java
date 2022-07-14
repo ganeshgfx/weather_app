@@ -2,6 +2,7 @@ package ganesh.gfx.weatherapp.ui.home;
 
 import static ganesh.gfx.weatherapp.MainNavPage.wheatherDataChanged;
 
+import android.annotation.SuppressLint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -33,11 +34,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ganesh.gfx.weatherapp.BuildConfig;
 import ganesh.gfx.weatherapp.MainNavPage;
 import ganesh.gfx.weatherapp.R;
+import ganesh.gfx.weatherapp.data.Location.LocationData;
+import ganesh.gfx.weatherapp.data.Location.MLocation;
 import ganesh.gfx.weatherapp.data.WeatherDataInterface;
 import ganesh.gfx.weatherapp.data.hourly.WeatherDataHourly;
 import ganesh.gfx.weatherapp.data.info.WeatherInfo;
@@ -69,7 +73,7 @@ public class HomeFragment extends Fragment {
     boolean extend = true;
 
     final String API_KEY = BuildConfig.WHETHER_KEY;
-    String URL = "https://api.openweathermap.org/data/2.5/";
+    String URL = "https://api.openweathermap.org/";
 
     public View onCreateView(
             @NonNull LayoutInflater inflater,
@@ -255,6 +259,30 @@ public class HomeFragment extends Fragment {
     public void getLocation(String place) {
         loading(true);
         textView.setText("");
+        //useGeocoder(place);
+        useOpenWeatherGeo(place);
+    }
+    void useOpenWeatherGeo(String place){
+        Call<List<LocationData>> call = apiService.getLocation(place,10, API_KEY);
+        call.enqueue(new Callback<List<LocationData>>() {
+            @Override
+            public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
+                List<LocationData> locations = response.body();
+                //Log.i("TAG", "onResponse: "+gson.toJson(locations));
+                List<MLocation> mLocations = new ArrayList<>();
+                for (LocationData l:locations){
+                    mLocations.add(new MLocation(l));
+                }
+                makeRecylerForLocationList(mLocations);
+            }
+
+            @Override
+            public void onFailure(Call<List<LocationData>> call, Throwable t) {
+            }
+        }) ;
+    }
+    @SuppressLint("StaticFieldLeak")
+    private void useGeocoder(String place) {
         new AsyncTask<Void, Void, List<Address>>() {
             @Override
             protected List<Address> doInBackground(Void... voids) {
@@ -268,21 +296,21 @@ public class HomeFragment extends Fragment {
                 return address;
             }
             public void onPostExecute(List<Address> listAddresses) {
-                Address address = null;
+
                 if ((listAddresses != null) && (listAddresses.size() > 0)) {
-                    address = listAddresses.get(0);
+
+
+                    List<MLocation> mLocations = new ArrayList<>();
+
+                    for (Address address:listAddresses) {
+                        mLocations.add(new MLocation(address));
+                    }
+//                    for (MLocation m:mLocations) {
+//                        m.chexk();
+//                    }
+
                     //Log.d("TAG", "onPostExecute: " + listAddresses.size());
-                    locationAdapter = new LocationAdapter(
-                            listAddresses
-                    );
-                    recyclerView.setAdapter(
-                            locationAdapter
-                    );
-                    locationAdapter.setClickListener((view, address1) -> {
-                        wheatherDataChanged = true;
-                        getWeatherHourly(address1.getLatitude(), address1.getLongitude());
-                        fab.setExtended(false);
-                    });
+                    makeRecylerForLocationList(mLocations);
                     loading(false);
                 } else {
                     loading(false);
@@ -290,6 +318,23 @@ public class HomeFragment extends Fragment {
             }
         }.execute();
     }
+
+    private void makeRecylerForLocationList(List<MLocation> mLocations) {
+        locationAdapter = new LocationAdapter(
+                //listAddresses
+                mLocations
+        );
+        recyclerView.setAdapter(
+                locationAdapter
+        );
+        locationAdapter.setClickListener((view, address1) -> {
+            wheatherDataChanged = true;
+            getWeatherHourly(address1.getLatitude(), address1.getLongitude());
+            fab.setExtended(false);
+            extend = true;
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();

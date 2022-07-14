@@ -14,6 +14,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
@@ -68,9 +70,12 @@ public class MainNavPage extends AppCompatActivity {
         binding = ActivityMainNavPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
         selectedPage = R.id.navigation_home;
-
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             locationRequest = LocationRequest.create();
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -79,113 +84,86 @@ public class MainNavPage extends AppCompatActivity {
             getCurrentLocation();
         } else {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 getLocationForLatest();
                 Log.d(TAG, "permission allowed");
             }else {
-
                 locationPermissionRequest.launch(new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION
                 });
-
             }
         }
-
         navView = findViewById(R.id.nav_view);
-
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home,
                 R.id.navigation_dashboard,
                 R.id.navigation_setting)
                 .build();
-
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main_nav_page);
         // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-           selectedPage = destination.getId();
+            selectedPage = destination.getId();
         });
         NavigationUI.setupWithNavController(binding.navView, navController);
-
-
-
         //getSupportActionBar().hide();
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == 2 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             if (resultCode == Activity.RESULT_OK) {
                 getCurrentLocation();
             }
         }
-
     }
-
     static double latitude = 999;
     static double longitude = 999;
-
     public static double getLatitude() {
         return latitude;
     }
-
     public static double getLongitude() {
         return longitude;
     }
-
     private void getCurrentLocation() {
         if (true) {
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "getCurrentLocation: PERMISSION_GRANTED");
                 if (isGPSEnabled()) {
                     Log.d(TAG, "getCurrentLocation: getting location");
-
                     LocationServices.getFusedLocationProviderClient(getApplicationContext())
-                            .requestLocationUpdates(locationRequest, new LocationCallback() {
-                                @Override
-                                public void onLocationResult(@NonNull LocationResult locationResult) {
-                                    super.onLocationResult(locationResult);
-
-                                    LocationServices.getFusedLocationProviderClient(MainNavPage.this)
-                                            .removeLocationUpdates(this);
-
-                                    if (locationResult != null && locationResult.getLocations().size() > 0) {
-
-                                        int index = locationResult.getLocations().size() - 1;
-                                        latitude = locationResult.getLocations().get(index).getLatitude();
-                                        longitude = locationResult.getLocations().get(index).getLongitude();
-
-                                        //Toast.makeText(MainNavPage.this, "Latitude: "+ latitude + "\n" + "Longitude: "+ longitude, Toast.LENGTH_SHORT).show();
-
-                                    }
-                                }
-                            }, Looper.getMainLooper());
-
-
+                            .requestLocationUpdates(locationRequest,
+                                    new LocationCallback() {
+                                        @Override
+                                        public void onLocationResult(@NonNull LocationResult locationResult) {
+                                            super.onLocationResult(locationResult);
+                                            LocationServices.getFusedLocationProviderClient(MainNavPage.this)
+                                                    .removeLocationUpdates(this);
+                                            if (locationResult != null && locationResult.getLocations().size() > 0) {
+                                                int index = locationResult.getLocations().size() - 1;
+                                                latitude = locationResult.getLocations().get(index).getLatitude();
+                                                longitude = locationResult.getLocations().get(index).getLongitude();
+                                            }
+                                        }
+                                    }, Looper.getMainLooper());
                 } else {
                     Log.d(TAG, "getCurrentLocation: GPS not enable");
                     turnOnGPS();
                 }
-
             } else {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
     }
-
     private void turnOnGPS() {
-
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
         builder.setAlwaysShow(true);
-
         Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(getApplicationContext())
                 .checkLocationSettings(builder.build());
-
         result.addOnCompleteListener(task -> {
-
             try {
                 LocationSettingsResponse response = task.getResult(ApiException.class);
                 Toast.makeText(getApplicationContext(), "GPS is already tured on", Toast.LENGTH_SHORT).show();
@@ -209,38 +187,24 @@ public class MainNavPage extends AppCompatActivity {
                 }
             }
         });
-
     }
-
     //for 12
     private void enableLoc() {
-
-
-
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(30 * 1000);
         locationRequest.setFastestInterval(5 * 1000);
-
-
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest);
-
         builder.setAlwaysShow(true);
-
         Task<LocationSettingsResponse> result =
                 LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
-
-        result.addOnCompleteListener(task -> {
-            try {
+        result.addOnCompleteListener(task -> {try {
                 LocationSettingsResponse response = task.getResult(ApiException.class);
                 getLocationForLatest();
-                //gps = false;
                 // All location settings are satisfied. The client can initialize location
                 // requests here.
-
             } catch (ApiException exception) {
-                //gps = false;
                 switch (exception.getStatusCode()) {
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         // Location settings are not satisfied. But could be fixed by showing the
@@ -250,11 +214,8 @@ public class MainNavPage extends AppCompatActivity {
                             ResolvableApiException resolvable = (ResolvableApiException) exception;
                             // Show the dialog by calling startResolutionForResult(),
                             // and check the result in onActivityResult().
-                            resolvable.startResolutionForResult(
-                                    MainNavPage.this,
-                                    10);
+                            resolvable.startResolutionForResult(MainNavPage.this, 10);
                         } catch (IntentSender.SendIntentException e) {
-                            // Ignore the error.
                         } catch (ClassCastException e) {
                             // Ignore, should be an impossible error.
                         }
@@ -266,7 +227,6 @@ public class MainNavPage extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     @Override
@@ -305,24 +265,22 @@ public class MainNavPage extends AppCompatActivity {
                             getLocationForLatest();
                             Log.d(TAG, "Precise location access granted. ");
                         } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                            // Only approximate location access granted.
                             getLocationForLatest();
                             Log.d(TAG, "getCurrentLocation:  Only approximate location access granted.");
                         } else {
                             Log.d(TAG, ": No location access granted.");
-                            Toast.makeText(this, "\uD83E\uDD7A Please allow location permission to get current location", Toast.LENGTH_SHORT).show();
-                            // No location access granted.
+                            Toast.makeText(this, "\uD83E\uDD7A Please allow location permission to get current location",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
             );
-
     void getLocationForLatest() {
         if (
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this,
+                                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Not allowed");
-
             return;
         }
         Log.d(TAG, "getting location");
@@ -332,19 +290,14 @@ public class MainNavPage extends AppCompatActivity {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
                         Log.d(TAG, latitude+" : "+longitude);
-                    }
-                    else {
-
+                    } else {
                         Log.d(TAG, "location NULL");
-                        //getLocationForLatest();
-
                         if(!isGPSEnabled() ){
                             Log.d(TAG, "getLocationForLatest: "+isGPSEnabled());
                             if(!gps){
                                 gps = true;
                                 enableLoc();
                             }
-
                         } else {
                             new Handler(Looper.getMainLooper()).postDelayed(() ->{
                                 getLocationForLatest();

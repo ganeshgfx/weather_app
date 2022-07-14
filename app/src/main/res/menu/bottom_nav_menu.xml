@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/navigation_dashboard"
-        android:icon="@drawable/ic_twotone_insert_emoticon_24"
+        android:icon="@drawable/selector_profile"
         android:title="Profile" />
 
 <!--    <item-->

@@ -19,7 +19,7 @@ public class WeatherDataHourly {
     public Double cnt;
     @SerializedName("list")
     @Expose
-    public java.util.List<ganesh.gfx.weatherapp.data.hourly.List> list = null;
+    public java.util.List<WeatherList> weatherList = null;
     @SerializedName("city")
     @Expose
     public City city;

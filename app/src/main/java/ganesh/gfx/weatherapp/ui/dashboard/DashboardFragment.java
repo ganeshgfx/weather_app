@@ -71,10 +71,8 @@ public class DashboardFragment extends Fragment {
             }
             return false;
         });
-
         return root;
     }
-
     private boolean logout() {
         FirebaseAuth.getInstance().signOut();
         getContext().startActivity(new Intent(getContext(), MainActivity.class));

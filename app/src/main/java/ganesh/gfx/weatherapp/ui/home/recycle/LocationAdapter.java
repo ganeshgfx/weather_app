@@ -15,15 +15,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ganesh.gfx.weatherapp.R;
+import ganesh.gfx.weatherapp.data.Location.MLocation;
 import ganesh.gfx.weatherapp.ui.home.HomeFragment;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.RecycleViewHolder> implements View.OnClickListener{
 
-    List<Address> address;
+    List<MLocation> address;
     Context context;
     private ItemClickListener clickListener;
 
-    public LocationAdapter(List<Address> address){
+    public LocationAdapter(List<MLocation> address){
         this.address = address;
     }
 
@@ -42,7 +43,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Recycl
     @Override
     public void onBindViewHolder(@NonNull RecycleViewHolder holder, int position) {
         String add = " ";
-        add += address.get(position).getAddressLine(0);
+        add += address.get(position).getAddressLine();
         holder.location.setText(add);
     }
 
@@ -52,9 +53,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Recycl
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(View view) {}
 
-    }
     public void setClickListener(ItemClickListener itemClickListener) {
         this.clickListener = itemClickListener;
     }
@@ -69,7 +69,8 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Recycl
 
         @Override
         public void onClick(View view) {
-            if (clickListener != null) clickListener.onClick(view, address.get(getAdapterPosition()));
+            if (clickListener != null)
+                clickListener.onClick(view, address.get(getAdapterPosition()));
         }
     }
 

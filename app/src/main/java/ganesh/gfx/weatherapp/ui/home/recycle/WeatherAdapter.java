@@ -1,20 +1,13 @@
 package ganesh.gfx.weatherapp.ui.home.recycle;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -25,18 +18,16 @@ import com.google.gson.GsonBuilder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import ganesh.gfx.weatherapp.R;
-import ganesh.gfx.weatherapp.data.hourly.Weather;
-import ganesh.gfx.weatherapp.data.hourly.WeatherDataHourly;
+import ganesh.gfx.weatherapp.data.hourly.WeatherList;
 
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.RecycleViewHolder> {
 
-    List<ganesh.gfx.weatherapp.data.hourly.List> list;
+    List<WeatherList> weatherList;
     Gson gson;
-    public WeatherAdapter(List<ganesh.gfx.weatherapp.data.hourly.List> list){
-        this.list = list;
+    public WeatherAdapter(List<WeatherList> weatherList){
+        this.weatherList = weatherList;
         gson =  new GsonBuilder().setPrettyPrinting().create();
     }
 
@@ -60,7 +51,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.RecycleV
     @Override
     public void onBindViewHolder(@NonNull RecycleViewHolder holder, int position) {
 
-        ganesh.gfx.weatherapp.data.hourly.List info = list.get(position);
+        WeatherList info = weatherList.get(position);
 
         //String string = gson.toJson(list.get(position).weather);
         //string += "\n+"+gson.toJson(list.get(position).dtTxt);
@@ -85,7 +76,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.RecycleV
 
     @Override
     public int getItemCount() {
-       return list.size();
+       return weatherList.size();
     }
 
     class RecycleViewHolder extends RecyclerView.ViewHolder{
