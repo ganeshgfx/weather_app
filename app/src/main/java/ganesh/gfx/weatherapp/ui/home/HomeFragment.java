@@ -318,8 +318,6 @@ public class HomeFragment extends Fragment {
             public void onPostExecute(List<Address> listAddresses) {
 
                 if ((listAddresses != null) && (listAddresses.size() > 0)) {
-
-
                     List<MLocation> mLocations = new ArrayList<>();
 
                     for (Address address:listAddresses) {

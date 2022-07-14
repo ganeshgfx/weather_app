@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -70,11 +72,21 @@ public class MainNavPage extends AppCompatActivity {
         binding = ActivityMainNavPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Window w = getWindow();
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
+            Resources resources = this.getResources();
+            int n = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+
+        int dimensionPixelSizeNAV = resources.getDimensionPixelSize(n);
+
+
+
+
+        //Log.d(TAG, "onCreate: nav Hight "+ dimensionPixelSize);
+//        }
+
         selectedPage = R.id.navigation_home;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             locationRequest = LocationRequest.create();
@@ -96,6 +108,9 @@ public class MainNavPage extends AppCompatActivity {
             }
         }
         navView = findViewById(R.id.nav_view);
+        // FIXME: 7/14/22 refesh on ui change
+        navView.setPadding(0,0,0,dimensionPixelSizeNAV);
+
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home,
                 R.id.navigation_dashboard,

@@ -1,11 +1,15 @@
 package ganesh.gfx.weatherapp.ui.dashboard;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -71,6 +76,19 @@ public class DashboardFragment extends Fragment {
             }
             return false;
         });
+
+
+
+        Resources resources = this.getResources();
+        int n = resources.getIdentifier("status_bar_height", "dimen", "android");
+
+        float scale = getResources().getDisplayMetrics().density;
+        int dpAsPixels = (int) (n/scale + 0.5f);
+
+        //AppBarLayout appBarLayout = root.findViewById(R.id.AppBarLayout);
+
+        //materialToolbar.setPadding(0,dpAsPixels,0,0);
+
         return root;
     }
     private boolean logout() {
