@@ -3,6 +3,7 @@ package ganesh.gfx.weatherapp.ui.home;
 import static ganesh.gfx.weatherapp.MainNavPage.wheatherDataChanged;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -16,12 +17,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -108,8 +112,8 @@ public class HomeFragment extends Fragment {
         fab.setExtended(!extend);
         fab.setOnClickListener(view -> {
             String place = textInputLayout.getEditText().getText().toString().trim();
-            if (!extend && !place.equals(""))
-                getLocation(place);
+//            if (!extend && !place.equals(""))
+//                getLocation(place);
             showInputLayout(extend);
             extend = !extend;
             fab.setExtended(!extend);
@@ -229,14 +233,17 @@ public class HomeFragment extends Fragment {
     }
 
     private void setInfoUi(WeatherDataHourly data) {
-
         //Toast.makeText(getContext(), ""+MainNavPage.selectedPage, Toast.LENGTH_SHORT).show();
-        if(MainNavPage.selectedPage == R.id.navigation_home)
-            getActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
+        if(MainNavPage.selectedPage == R.id.navigation_home) {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager
+                    .beginTransaction();
+
+            fragmentTransaction
                     .replace(R.id.InfoFragment, new InfoFragment(data))
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
+        }
 
     }
 
@@ -256,11 +263,23 @@ public class HomeFragment extends Fragment {
     }
 
     LocationAdapter locationAdapter;
+    boolean searchingLocation = false;
     public void getLocation(String place) {
-        loading(true);
-        textView.setText("");
+        //loading(true);
+        //textView.setText("");
         //useGeocoder(place);
-        useOpenWeatherGeo(place);
+        //useOpenWeatherGeo(place);
+        if(!searchingLocation){
+            searchingLocation = true;
+            //useGeocoder(place);
+            useOpenWeatherGeo(place);
+            Log.i("TAG", "getLocation: ------- ");
+            new Handler(Looper.getMainLooper()).postDelayed(() ->{
+                searchingLocation = false;
+            }, 300);
+        }
+
+
     }
     void useOpenWeatherGeo(String place){
         Call<List<LocationData>> call = apiService.getLocation(place,10, API_KEY);
@@ -278,6 +297,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<LocationData>> call, Throwable t) {
+                Toast.makeText(getContext(), ""+t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }) ;
     }
@@ -328,6 +348,7 @@ public class HomeFragment extends Fragment {
                 locationAdapter
         );
         locationAdapter.setClickListener((view, address1) -> {
+            closeKeyboard();
             wheatherDataChanged = true;
             getWeatherHourly(address1.getLatitude(), address1.getLongitude());
             fab.setExtended(false);
@@ -338,5 +359,29 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    private void closeKeyboard()
+    {
+        // this will give us the view
+        // which is currently focus
+        // in this layout
+        View view = getActivity().getCurrentFocus();
+
+        // if nothing is currently
+        // focus then this will protect
+        // the app from crash
+        if (view != null) {
+
+            // now assign the system
+            // service to InputMethodManager
+            InputMethodManager manager
+                    = (InputMethodManager)
+                    getActivity().getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+            manager
+                    .hideSoftInputFromWindow(
+                            view.getWindowToken(), 0);
+        }
     }
 }
